@@ -5,7 +5,6 @@ import styles from "./Search.module.scss";
 import clearIcon from "../../assets/img/clear.svg";
 
 function Search() {
-  console.log(SearchContext);
   const { searchValue, setSearchValue } = React.useContext(SearchContext);
 
   return (
