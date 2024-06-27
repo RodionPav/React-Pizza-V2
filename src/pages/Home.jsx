@@ -1,5 +1,9 @@
+/* eslint-disable no-undef */
 import React from "react";
 
+import { useSelector, useDispatch } from "react-redux";
+
+import { setActiveCategory, setActiveSort } from "../redux/slices/filterSlice";
 import Sort from "../components/Sort/Sort";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
 import Categories from "../components/Categories/Categories";
@@ -9,52 +13,32 @@ import Header from "../components/Header/Header";
 export const SearchContext = React.createContext();
 
 function Home() {
-  
+  const activeCategory = useSelector(
+    (state) => state.filterSlice.activeCategory
+  );
+
+  const activeSort = useSelector((state) => state.filterSlice.activeSort);
+
+  const dispatch = useDispatch();
+
   const [searchValue, setSearchValue] = React.useState("");
 
-  const [activeCategory, setActiveCategory] = React.useState(0);
-
-  const [activeSort, setActiveSort] = React.useState({
-    name: "популярности",
-    sortProperty: "rating",
-  });
+  // const [activeSort, setActiveSort] = React.useState({
+  //   name: "популярности",
+  //   sortProperty: "rating",
+  // });
 
   const [items, setItems] = React.useState([]);
 
   const [isLoading, setIsLoading] = React.useState(true);
 
-  // React.useEffect(() => {
-  //   setIsLoading(true);
-  //   const url = new URL(
-  //     `https://6644c89fb8925626f88fedbe.mockapi.io/items?${
-  //       activeCategory > 0 ? `category =${activeCategory}` : ""
-  //     }&sortBy=${activeSort.sortProperty}&order=desc`
-  //   );
-  //   // url.searchParams.append("category", [activeCategory]);
-  //   // url.searchParams.append("price", "0");
-  //   // url.searchParams.append("order", "asc");
-  //   // console.log(url.href);
+  const setCategoryId = (id) => {
+    dispatch(setActiveCategory(id));
+  };
 
-  //   fetch(url, {
-  //     method: "GET",
-  //     headers: { "content-type": "application/json" },
-  //   })
-  //     .then((res) => {
-  //       if (res.ok) {
-  //         return res.json();
-  //       }
-  //       // handle error
-  //     })
-  //     .then((arr) => {
-  //       setPizzas(arr);
-  //       setIsLoading(false);
-  //       // list of tasks sorted by title in descending order
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  //   window.scrollTo(0, 0);
-  // }, [activeCategory, activeSort]);
+  const setSort = (obj) => {
+    dispatch(setActiveSort(obj));
+  };
 
   React.useEffect(() => {
     setIsLoading(true);
@@ -78,6 +62,7 @@ function Home() {
       pizzas.title.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
     ) // фильтрация items(пицц) по searchValue в Search , c переводом в LowerCase
     .map((obj) => <PizzaBlock {...obj} key={obj.id} />);
+  // map отфильтрованных items(пицц)
 
   const skeletons = [...new Array(8)].map((_, index) => (
     <Skeleton key={index} />
@@ -92,14 +77,10 @@ function Home() {
             <div className="content__top">
               <Categories
                 activeCategory={activeCategory}
-                setActiveCategory={(i) => setActiveCategory(i)}
+                setActiveCategory={setCategoryId}
               />
-              <Sort
-                activeSort={activeSort}
-                setActiveSort={(obj) => setActiveSort(obj)}
-              />
+              <Sort activeSort={activeSort} setActiveSort={setSort} />
             </div>
-
             <h2 className="content__title">Все пиццы</h2>
             <div className="content__items">
               {isLoading == false ? pizzas : skeletons}
