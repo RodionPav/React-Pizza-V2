@@ -1,7 +1,10 @@
 import React from "react";
+
+import { useSelector, useDispatch } from "react-redux";
+import { setActiveSort } from "../../redux/slices/filterSlice";
 import "./Sort.scss";
 
-function Sort({ activeSort, setActiveSort }) {
+function Sort() {
   const sorts = [
     { name: "популярности (desc)", sortProperty: "rating" },
     { name: "популярности(asc)", sortProperty: "-rating" },
@@ -13,8 +16,16 @@ function Sort({ activeSort, setActiveSort }) {
 
   const [open, setOpen] = React.useState(false);
 
-  let onClickSort = (obj) => {
-    setActiveSort(obj);
+  const activeSort = useSelector((state) => state.filterSlice.activeSort);
+
+  const dispatch = useDispatch();
+
+  const setSort = (obj) => {
+    dispatch(setActiveSort(obj));
+  };
+
+  const onClickSort = (obj) => {
+    setSort(obj);
     setOpen(false);
   };
 
