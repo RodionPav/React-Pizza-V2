@@ -17,7 +17,6 @@ const filterSlice = createSlice({
     },
 
     setActiveSort: (state, action) => {
-      console.log(action.payload)
       state.activeSort = action.payload;
     },
   },

@@ -7,9 +7,17 @@ import clearIcon from "../../assets/img/clear.svg";
 function Search() {
   const { searchValue, setSearchValue } = React.useContext(SearchContext);
 
+  const onClickClear = () => {
+    setSearchValue("");
+    inputRef.current.focus();
+  };
+
+  const inputRef = React.useRef();
+
   return (
     <div className={styles.root}>
       <input
+        ref={inputRef}
         value={searchValue}
         onChange={(event) => setSearchValue(event.target.value)}
         className={styles.input}
@@ -17,7 +25,7 @@ function Search() {
       />
       {searchValue && (
         <img
-          onClick={() => setSearchValue("")}
+          onClick={onClickClear}
           className={styles.clearIcon}
           src={clearIcon}
           alt="clearIcon"

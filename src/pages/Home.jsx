@@ -1,25 +1,21 @@
 /* eslint-disable no-undef */
 import React from "react";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { setActiveCategory, setActiveSort } from "../redux/slices/filterSlice";
 import Sort from "../components/Sort/Sort";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
 import Categories from "../components/Categories/Categories";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Header from "../components/Header/Header";
+import axios from "axios";
 
 export const SearchContext = React.createContext();
 
 function Home() {
-  const activeCategory = useSelector(
-    (state) => state.filterSlice.activeCategory
+  const { activeSort, activeCategory } = useSelector(
+    (state) => state.filterSlice
   );
-
-  const activeSort = useSelector((state) => state.filterSlice.activeSort);
-
-  const dispatch = useDispatch();
 
   const [searchValue, setSearchValue] = React.useState("");
 
@@ -32,26 +28,18 @@ function Home() {
 
   const [isLoading, setIsLoading] = React.useState(true);
 
-  const setCategoryId = (id) => {
-    dispatch(setActiveCategory(id));
-  };
-
-  const setSort = (obj) => {
-    dispatch(setActiveSort(obj));
-  };
-
   React.useEffect(() => {
     setIsLoading(true);
-    fetch(
-      `https://6644c89fb8925626f88fedbe.mockapi.io/items?${
-        activeCategory > 0 ? `category=${activeCategory}` : ""
-      }&sortBy=${activeSort.sortProperty.replace("-", "")}&order=${
-        activeSort.sortProperty.includes("-") ? "asc" : "desc"
-      }`
-    )
-      .then((res) => res.json())
-      .then((arr) => {
-        setItems(arr);
+    axios
+      .get(
+        `https://6644c89fb8925626f88fedbe.mockapi.io/items?${
+          activeCategory > 0 ? `category=${activeCategory}` : ""
+        }&sortBy=${activeSort.sortProperty.replace("-", "")}&order=${
+          activeSort.sortProperty.includes("-") ? "asc" : "desc"
+        }`
+      )
+      .then((res) => {
+        setItems(res.data);
         setIsLoading(false);
       });
     window.scrollTo(0, 0);
@@ -75,11 +63,8 @@ function Home() {
         <div className="content">
           <div className="container">
             <div className="content__top">
-              <Categories
-                activeCategory={activeCategory}
-                setActiveCategory={setCategoryId}
-              />
-              <Sort activeSort={activeSort} setActiveSort={setSort} />
+              <Categories />
+              <Sort />
             </div>
             <h2 className="content__title">Все пиццы</h2>
             <div className="content__items">
